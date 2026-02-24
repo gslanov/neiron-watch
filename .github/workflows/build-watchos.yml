@@ -59,6 +59,7 @@ jobs:
           security list-keychains -d user -s $KEYCHAIN_PATH login.keychain-db
           security default-keychain -s $KEYCHAIN_PATH
           echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
+          echo "KEYCHAIN_PASSWORD=$KEYCHAIN_PASSWORD" >> $GITHUB_ENV
 
       # ── Setup API key for provisioning ─────────────
       - name: Setup API Key
@@ -110,6 +111,20 @@ jobs:
               widget_profile_uuid = lane_context[SharedValues::SIGH_UDID]
               widget_profile_name = lane_context[SharedValues::SIGH_NAME]
               UI.message("Widget profile: #{widget_profile_name} (#{widget_profile_uuid})")
+
+              # Extract missing certificate from profile and import to keychain
+              UI.message("Extracting certificate from provisioning profile...")
+              profile_data = `security cms -D -i /tmp/profiles/AppStore_com.openclaw.neiron.watchkitapp.mobileprovision`
+              cert_match = profile_data.match(/<key>DeveloperCertificates<\/key>\s*<array>\s*<data>\s*(.*?)\s*<\/data>/m)
+              if cert_match
+                require 'base64'
+                File.open("/tmp/cert.cer", "wb") { |f| f.write(Base64.decode64(cert_match[1])) }
+                sh("security import /tmp/cert.cer -k \"#{ENV['KEYCHAIN_PATH']}\" -A")
+                sh("security set-key-partition-list -S apple-tool:,apple: -k \"#{ENV['KEYCHAIN_PASSWORD']}\" \"#{ENV['KEYCHAIN_PATH']}\"")
+                UI.message("Successfully extracted and imported certificate!")
+              else
+                UI.error("Failed to find DeveloperCertificates in profile!")
+              end
 
               # Set manual signing per-target with profile UUID in pbxproj
               update_code_signing_settings(
