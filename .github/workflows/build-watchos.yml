@@ -69,19 +69,25 @@ jobs:
           ASC_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
           TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          # 1. Download provisioning profiles
+          # 1. Create API key JSON for fastlane
           mkdir -p /tmp/profiles
-
-          fastlane run app_store_connect_api_key \
-            key_id:"$ASC_KEY_ID" issuer_id:"$ASC_ISSUER_ID" key_filepath:"$API_KEY_PATH"
+          KEY_CONTENT=$(cat "$API_KEY_PATH")
+          cat > /tmp/api_key.json << APIKEYEOF
+          {
+            "key_id": "$ASC_KEY_ID",
+            "issuer_id": "$ASC_ISSUER_ID",
+            "key": "$KEY_CONTENT",
+            "in_house": false
+          }
+          APIKEYEOF
 
           fastlane run get_provisioning_profile \
-            api_key_path:"$API_KEY_PATH" \
+            api_key_path:"/tmp/api_key.json" \
             app_identifier:"com.openclaw.neiron.watchkitapp" \
             platform:"ios" output_path:"/tmp/profiles" 2>&1 || true
 
           fastlane run get_provisioning_profile \
-            api_key_path:"$API_KEY_PATH" \
+            api_key_path:"/tmp/api_key.json" \
             app_identifier:"com.openclaw.neiron.watchkitapp.widgets" \
             platform:"ios" output_path:"/tmp/profiles" 2>&1 || true
 
