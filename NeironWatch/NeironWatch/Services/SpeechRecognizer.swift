@@ -1,14 +1,15 @@
 import Foundation
+#if canImport(Speech)
 import Speech
+#endif
 
 class SpeechRecognizer {
+    #if canImport(Speech)
     private let recognizer: SFSpeechRecognizer?
 
     init() {
         recognizer = SFSpeechRecognizer(locale: Locale(identifier: AppConfig.speechLocale))
     }
-
-    // MARK: - Transcription
 
     func transcribe(audioURL: URL) async throws -> String {
         let authorized = await Self.requestAuthorization()
@@ -35,8 +36,6 @@ class SpeechRecognizer {
         }
     }
 
-    // MARK: - Authorization
-
     static func requestAuthorization() async -> Bool {
         await withCheckedContinuation { continuation in
             SFSpeechRecognizer.requestAuthorization { status in
@@ -44,9 +43,18 @@ class SpeechRecognizer {
             }
         }
     }
-}
+    #else
+    init() {}
 
-// MARK: - Errors
+    func transcribe(audioURL: URL) async throws -> String {
+        throw SpeechRecognizerError.recognizerUnavailable
+    }
+
+    static func requestAuthorization() async -> Bool {
+        return false
+    }
+    #endif
+}
 
 enum SpeechRecognizerError: LocalizedError {
     case notAuthorized
@@ -57,7 +65,7 @@ enum SpeechRecognizerError: LocalizedError {
         case .notAuthorized:
             return "Speech recognition is not authorized."
         case .recognizerUnavailable:
-            return "Speech recognizer is not available."
+            return "Speech recognizer is not available on this platform."
         }
     }
 }

@@ -20,7 +20,7 @@ struct NeironShortcuts: AppShortcutsProvider {
         AppShortcut(
             intent: AskNeironIntent(),
             phrases: [
-                "Нейрон ответь",
+                "Ответь \(.applicationName)",
                 "Запустить \(.applicationName)",
                 "Спросить \(.applicationName)"
             ],

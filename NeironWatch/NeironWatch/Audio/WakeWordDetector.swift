@@ -1,44 +1,47 @@
 import Foundation
 import AVFoundation
+#if canImport(Speech)
 import Speech
+#endif
 import os.log
-
-// MARK: - WakeWordDetector
 
 class WakeWordDetector: ObservableObject {
     @Published var isListeningForWakeWord: Bool = false
 
     var onWakeWordDetected: (() -> Void)?
 
+    #if canImport(Speech)
     private let speechRecognizer: SFSpeechRecognizer?
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
+    #endif
     private let wakePhrase: String = AppConfig.wakePhrase
     private var managedAudioEngine: AVAudioEngine?
 
     private let logger = Logger(subsystem: "com.neiron.watch", category: "WakeWordDetector")
 
-    // MARK: - Init
-
     init() {
+        #if canImport(Speech)
         let locale = Locale(identifier: AppConfig.speechLocale)
         speechRecognizer = SFSpeechRecognizer(locale: locale)
+        #endif
         logger.info("WakeWordDetector initialized for locale: \(AppConfig.speechLocale)")
     }
 
-    // MARK: - Authorization
-
     static func requestAuthorization() async -> Bool {
+        #if canImport(Speech)
         await withCheckedContinuation { continuation in
             SFSpeechRecognizer.requestAuthorization { status in
                 continuation.resume(returning: status == .authorized)
             }
         }
+        #else
+        return false
+        #endif
     }
 
-    // MARK: - Detection
-
     func startDetecting(audioEngine: AVAudioEngine) {
+        #if canImport(Speech)
         guard let recognizer = speechRecognizer, recognizer.isAvailable else {
             logger.error("Speech recognizer unavailable for locale: \(AppConfig.speechLocale)")
             return
@@ -63,7 +66,6 @@ class WakeWordDetector: ObservableObject {
             }
             if let error {
                 self.logger.error("Recognition error: \(error.localizedDescription)")
-                // Restart on transient errors if still listening
                 if self.isListeningForWakeWord {
                     self.restartDetection(audioEngine: audioEngine)
                 }
@@ -82,24 +84,29 @@ class WakeWordDetector: ObservableObject {
 
         DispatchQueue.main.async { self.isListeningForWakeWord = true }
         logger.info("Wake word detection started, phrase: \"\(self.wakePhrase)\"")
+        #else
+        logger.warning("Speech framework not available, wake word detection disabled")
+        #endif
     }
 
     func stopDetecting() {
+        #if canImport(Speech)
         managedAudioEngine?.inputNode.removeTap(onBus: 0)
         managedAudioEngine = nil
         recognitionTask?.cancel()
         recognitionTask = nil
         recognitionRequest?.endAudio()
         recognitionRequest = nil
+        #endif
         DispatchQueue.main.async { self.isListeningForWakeWord = false }
         logger.info("Wake word detection stopped")
     }
 
-    // MARK: - Private
-
+    #if canImport(Speech)
     private func restartDetection(audioEngine: AVAudioEngine) {
         logger.info("Restarting wake word detection after error")
         stopDetecting()
         startDetecting(audioEngine: audioEngine)
     }
+    #endif
 }

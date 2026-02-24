@@ -36,9 +36,9 @@ class AudioManager: NSObject, ObservableObject {
         try session.setCategory(
             .playAndRecord,
             mode: .default,
-            options: [.defaultToSpeaker, .duckOthers]
+            options: [.duckOthers]
         )
-        try session.setPreferredSampleRate(AppConfig.audioSampleRate)
+        // setPreferredSampleRate unavailable on watchOS
         try session.setActive(true, options: .notifyOthersOnDeactivation)
         logger.info("Audio session configured: sampleRate=\(AppConfig.audioSampleRate)")
     }

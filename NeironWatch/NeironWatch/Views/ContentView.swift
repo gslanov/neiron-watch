@@ -70,7 +70,7 @@ struct ContentView: View {
                 .font(.caption)
                 .foregroundColor(audioManager.isRecording ? .red : .green)
                 .disabled(isProcessing || isShowingListening)
-                .handGestureShortcut(.primaryAction)
+                .applyHandGesture()
 
                 // Status
                 Text(statusText)
@@ -197,6 +197,19 @@ struct ContentView: View {
                 isProcessing = false
                 errorMessage = error.localizedDescription
             }
+        }
+    }
+}
+
+// MARK: - Hand Gesture availability wrapper
+
+extension View {
+    @ViewBuilder
+    func applyHandGesture() -> some View {
+        if #available(watchOS 11.0, *) {
+            self.handGestureShortcut(.primaryAction)
+        } else {
+            self
         }
     }
 }

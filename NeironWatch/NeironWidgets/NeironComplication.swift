@@ -40,7 +40,7 @@ struct NeironWidgetEntryView: View {
                 }
             }
             .widgetURL(URL(string: "neiron://record"))
-            .handGestureShortcut(.primaryAction)
+            .applyHandGesture()
 
         case .accessoryRectangular:
             HStack(spacing: 6) {
@@ -50,12 +50,12 @@ struct NeironWidgetEntryView: View {
                     .font(.headline)
             }
             .widgetURL(URL(string: "neiron://record"))
-            .handGestureShortcut(.primaryAction)
+            .applyHandGesture()
 
         case .accessoryInline:
             Label("Neiron", systemImage: "mic.fill")
                 .widgetURL(URL(string: "neiron://record"))
-                .handGestureShortcut(.primaryAction)
+                .applyHandGesture()
 
         default:
             VStack(spacing: 4) {
@@ -65,6 +65,19 @@ struct NeironWidgetEntryView: View {
                     .font(.caption.bold())
             }
             .widgetURL(URL(string: "neiron://record"))
+        }
+    }
+}
+
+// MARK: - Hand Gesture availability wrapper
+
+extension View {
+    @ViewBuilder
+    func applyHandGesture() -> some View {
+        if #available(watchOS 11.0, *) {
+            self.handGestureShortcut(.primaryAction)
+        } else {
+            self
         }
     }
 }
