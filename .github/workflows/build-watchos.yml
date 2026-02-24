@@ -135,7 +135,7 @@ jobs:
               sh(
                 "xcodebuild",
                 "archive",
-                "-project", "Neiron.xcodeproj",
+                "-project", "../Neiron.xcodeproj",
                 "-scheme", "NeironWatch",
                 "-sdk", "watchos",
                 "-archivePath", archive_path,
