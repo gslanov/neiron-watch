@@ -66,10 +66,10 @@ jobs:
         run: |
           mkdir -p fastlane
           cat > fastlane/Fastfile << 'FASTLANE'
-          default_platform(:watchos)
+          default_platform(:ios)
 
-          platform :watchos do
-            desc "Build and upload to TestFlight"
+          platform :ios do
+            desc "Build watchOS and upload to TestFlight"
             lane :release do
               api_key = app_store_connect_api_key(
                 key_id: ENV["ASC_KEY_ID"],
@@ -77,13 +77,12 @@ jobs:
                 key_filepath: ENV["API_KEY_PATH"]
               )
 
-              # Get provisioning profiles
+              # Get provisioning profiles (watchOS uses 'ios' in fastlane)
               ["com.openclaw.neiron.watchkitapp", "com.openclaw.neiron.watchkitapp.widgets"].each do |app_id|
                 get_provisioning_profile(
                   api_key: api_key,
                   app_identifier: app_id,
-                  platform: "watchos",
-                  filename: "#{app_id}.mobileprovision"
+                  platform: "ios"
                 )
               end
 
@@ -91,13 +90,9 @@ jobs:
                 project: "Neiron.xcodeproj",
                 scheme: "NeironWatch",
                 destination: "generic/platform=watchOS",
+                configuration: "Release",
                 export_method: "app-store",
-                export_options: {
-                  provisioningProfiles: {
-                    "com.openclaw.neiron.watchkitapp" => "com.openclaw.neiron.watchkitapp",
-                    "com.openclaw.neiron.watchkitapp.widgets" => "com.openclaw.neiron.watchkitapp.widgets"
-                  }
-                }
+                xcargs: "DEVELOPMENT_TEAM=#{ENV['TEAM_ID']}"
               )
 
               upload_to_testflight(
@@ -115,7 +110,7 @@ jobs:
           ASC_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
           TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        run: fastlane watchos release
+        run: fastlane ios release
 
       # ── Cleanup ────────────────────────────────────
       - name: Cleanup
