@@ -96,3 +96,10 @@ struct NeironWidget: Widget {
         .supportedFamilies([.accessoryCircular, .accessoryRectangular, .accessoryInline])
     }
 }
+
+@main
+struct NeironWidgetBundle: WidgetBundle {
+    var body: some Widget {
+        NeironWidget()
+    }
+}

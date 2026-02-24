@@ -1,0 +1,676 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		28218EA1A260D127F8085335 /* WakeWordDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2934FB32E0F2A405367A7265 /* WakeWordDetector.swift */; };
+		3C8A0DB4F6BD7AA9878FEC9C /* SilenceDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DF17CC46A8F838F86EA693 /* SilenceDetector.swift */; };
+		3F303C2DAFC19BCE035FAA73 /* ResponseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDDA83DEBBEA7B8FBB195B97 /* ResponseView.swift */; };
+		421EB36C5670B0D0A2E25830 /* OpenClawClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E119FA2802FC763A9E175FA /* OpenClawClient.swift */; };
+		4E8FF4E0834B66ABE2BE5B68 /* ListeningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD9E36108463B2C28258FC0 /* ListeningView.swift */; };
+		544813B47C97C9AD194B7879 /* AskNeironIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB406E4E5232FBBAFE8ACE54 /* AskNeironIntent.swift */; };
+		5D5C3A6417FCE3504E7089A1 /* NeironWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 4590A646A9500879EFAA8060 /* NeironWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		6C3F93D6A204591F5CD5181A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 77F1382FB3E37A0FD3FEEEF2 /* Assets.xcassets */; };
+		8A2B324D1868219F649AB908 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80B2E19D975A6EF64D060CD0 /* AppConfig.swift */; };
+		9F2663E8000D242360ACD56E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 469E18C8D99FFF90D311427C /* Assets.xcassets */; };
+		A9A03E682EE608EA9EAF747D /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73A8C7B22E38A129C1048552 /* SpeechRecognizer.swift */; };
+		AC5113B31C500C83EEF686C8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E80366E58185C5A2AD840214 /* ContentView.swift */; };
+		B7E878BC9C7590D845EF65F1 /* APIModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8588C07381E21121684DC649 /* APIModels.swift */; };
+		C5E0252FB59AF8FBA28E236D /* NeironApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A7823EC436644BAED247A02 /* NeironApp.swift */; };
+		C87C4EB16008B3F75BB3F887 /* CompanionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8770BC6B24AB0A97AF44B677 /* CompanionApp.swift */; };
+		D116731C08C3DECB34C62B3A /* NeironComplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E753F0D721F06FB4500F643 /* NeironComplication.swift */; };
+		D158546DE4FFDC58F5BB189B /* NeironWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A754B2B68AED02851669C94A /* NeironWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		D7D0A86FBBF0918A44ACD174 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B18C08BD4B66CFF66B525105 /* AudioManager.swift */; };
+		EBC51CAD3C2AC7D7160DDCEA /* ListeningSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00A0C1FEE050EC8B11A136B1 /* ListeningSession.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		0C5D9B559C8804DE40A82914 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 41DB3CACD52D33CBA46B6E84 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 466063A7298DDF909BBBBA95;
+			remoteInfo = NeironWidgets;
+		};
+		80751DDFE0E17A4D004920FB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 41DB3CACD52D33CBA46B6E84 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 444CF557C0704CE02C32ABC9;
+			remoteInfo = NeironWatch;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		526413F882EE1B43AF444398 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				D158546DE4FFDC58F5BB189B /* NeironWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B157789643E091870FDF068F /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				5D5C3A6417FCE3504E7089A1 /* NeironWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		00A0C1FEE050EC8B11A136B1 /* ListeningSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningSession.swift; sourceTree = "<group>"; };
+		2934FB32E0F2A405367A7265 /* WakeWordDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WakeWordDetector.swift; sourceTree = "<group>"; };
+		35DF17CC46A8F838F86EA693 /* SilenceDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SilenceDetector.swift; sourceTree = "<group>"; };
+		4590A646A9500879EFAA8060 /* NeironWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeironWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		469E18C8D99FFF90D311427C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5A00DC6B72663AF4FE63B8B4 /* NeironWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NeironWatch.entitlements; sourceTree = "<group>"; };
+		5E753F0D721F06FB4500F643 /* NeironComplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeironComplication.swift; sourceTree = "<group>"; };
+		73A8C7B22E38A129C1048552 /* SpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
+		77F1382FB3E37A0FD3FEEEF2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		80B2E19D975A6EF64D060CD0 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		8319AEB6B2821CE3041E66BA /* NeironiOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NeironiOS.entitlements; sourceTree = "<group>"; };
+		8588C07381E21121684DC649 /* APIModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIModels.swift; sourceTree = "<group>"; };
+		8770BC6B24AB0A97AF44B677 /* CompanionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionApp.swift; sourceTree = "<group>"; };
+		8A7823EC436644BAED247A02 /* NeironApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeironApp.swift; sourceTree = "<group>"; };
+		9E119FA2802FC763A9E175FA /* OpenClawClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenClawClient.swift; sourceTree = "<group>"; };
+		A2527BCEE4D00678D7F4B17D /* NeironiOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = NeironiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A754B2B68AED02851669C94A /* NeironWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NeironWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB406E4E5232FBBAFE8ACE54 /* AskNeironIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AskNeironIntent.swift; sourceTree = "<group>"; };
+		B18C08BD4B66CFF66B525105 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
+		BBF712A4DAA34E6EB2129538 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		CACD9D3BF61B3DC1101FB7BE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		DAD9E36108463B2C28258FC0 /* ListeningView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningView.swift; sourceTree = "<group>"; };
+		DDDA83DEBBEA7B8FBB195B97 /* ResponseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponseView.swift; sourceTree = "<group>"; };
+		E80366E58185C5A2AD840214 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F79E9CE78853328162E3ACCD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		13867A4D4FAD8526F1581F82 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				8A7823EC436644BAED247A02 /* NeironApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		242218E02ECDE47B3049CDD2 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				00A0C1FEE050EC8B11A136B1 /* ListeningSession.swift */,
+				73A8C7B22E38A129C1048552 /* SpeechRecognizer.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		41923E612859CBF3AD5DCF11 /* NeironWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				CACD9D3BF61B3DC1101FB7BE /* Info.plist */,
+				5E753F0D721F06FB4500F643 /* NeironComplication.swift */,
+			);
+			path = NeironWidgets;
+			sourceTree = "<group>";
+		};
+		48E3609844F6FF9E2D8B9268 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				80B2E19D975A6EF64D060CD0 /* AppConfig.swift */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		4F7EB8ACE7954596DA515A4D /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				B18C08BD4B66CFF66B525105 /* AudioManager.swift */,
+				35DF17CC46A8F838F86EA693 /* SilenceDetector.swift */,
+				2934FB32E0F2A405367A7265 /* WakeWordDetector.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		5D90AE11A384E5F9D3E084F0 /* NeironiOS */ = {
+			isa = PBXGroup;
+			children = (
+				469E18C8D99FFF90D311427C /* Assets.xcassets */,
+				8770BC6B24AB0A97AF44B677 /* CompanionApp.swift */,
+				F79E9CE78853328162E3ACCD /* Info.plist */,
+				8319AEB6B2821CE3041E66BA /* NeironiOS.entitlements */,
+			);
+			path = NeironiOS;
+			sourceTree = "<group>";
+		};
+		726086CB092F8B4AA940EAE2 /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				AB406E4E5232FBBAFE8ACE54 /* AskNeironIntent.swift */,
+			);
+			path = Intents;
+			sourceTree = "<group>";
+		};
+		7CA28BEA66FC043E092E7574 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A2527BCEE4D00678D7F4B17D /* NeironiOS.app */,
+				4590A646A9500879EFAA8060 /* NeironWatch.app */,
+				A754B2B68AED02851669C94A /* NeironWidgets.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		95E7110287BB31314413CA24 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				8588C07381E21121684DC649 /* APIModels.swift */,
+				9E119FA2802FC763A9E175FA /* OpenClawClient.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		A23C1DDCE22A7BCB43303BF6 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				77F1382FB3E37A0FD3FEEEF2 /* Assets.xcassets */,
+				BBF712A4DAA34E6EB2129538 /* Info.plist */,
+				5A00DC6B72663AF4FE63B8B4 /* NeironWatch.entitlements */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		AF8DC30ED3E2F1E2B268DB72 = {
+			isa = PBXGroup;
+			children = (
+				5D90AE11A384E5F9D3E084F0 /* NeironiOS */,
+				C2AE07D1F96AB88F41B38715 /* NeironWatch */,
+				41923E612859CBF3AD5DCF11 /* NeironWidgets */,
+				7CA28BEA66FC043E092E7574 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C2AE07D1F96AB88F41B38715 /* NeironWatch */ = {
+			isa = PBXGroup;
+			children = (
+				13867A4D4FAD8526F1581F82 /* App */,
+				4F7EB8ACE7954596DA515A4D /* Audio */,
+				48E3609844F6FF9E2D8B9268 /* Config */,
+				726086CB092F8B4AA940EAE2 /* Intents */,
+				95E7110287BB31314413CA24 /* Network */,
+				A23C1DDCE22A7BCB43303BF6 /* Resources */,
+				242218E02ECDE47B3049CDD2 /* Services */,
+				F5A7C776FDD0CD489CFF5B55 /* Views */,
+			);
+			path = NeironWatch;
+			sourceTree = "<group>";
+		};
+		F5A7C776FDD0CD489CFF5B55 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E80366E58185C5A2AD840214 /* ContentView.swift */,
+				DAD9E36108463B2C28258FC0 /* ListeningView.swift */,
+				DDDA83DEBBEA7B8FBB195B97 /* ResponseView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		444CF557C0704CE02C32ABC9 /* NeironWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B0001C28F22BF76E78816382 /* Build configuration list for PBXNativeTarget "NeironWatch" */;
+			buildPhases = (
+				559182B356163E03276A9D9D /* Sources */,
+				1CC41048B18899733683B39A /* Resources */,
+				526413F882EE1B43AF444398 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				66B858B6495CC87E1633619D /* PBXTargetDependency */,
+			);
+			name = NeironWatch;
+			productName = NeironWatch;
+			productReference = 4590A646A9500879EFAA8060 /* NeironWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
+		466063A7298DDF909BBBBA95 /* NeironWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7932B9294A3D4EF2C480B4D9 /* Build configuration list for PBXNativeTarget "NeironWidgets" */;
+			buildPhases = (
+				4BCDD5C43625809637CF76AF /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NeironWidgets;
+			productName = NeironWidgets;
+			productReference = A754B2B68AED02851669C94A /* NeironWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		4D13D753FDFE4F4875382391 /* NeironiOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E84B878F1E0109E4D10E37EE /* Build configuration list for PBXNativeTarget "NeironiOS" */;
+			buildPhases = (
+				81019469937850A2D61658E9 /* Sources */,
+				3440A299C6463AFFA5B33FE1 /* Resources */,
+				B157789643E091870FDF068F /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				88D23F9AD19A20D354D6FB7F /* PBXTargetDependency */,
+			);
+			name = NeironiOS;
+			productName = NeironiOS;
+			productReference = A2527BCEE4D00678D7F4B17D /* NeironiOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		41DB3CACD52D33CBA46B6E84 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					444CF557C0704CE02C32ABC9 = {
+						DevelopmentTeam = X63G3W3XHB;
+						ProvisioningStyle = Automatic;
+					};
+					466063A7298DDF909BBBBA95 = {
+						DevelopmentTeam = X63G3W3XHB;
+						ProvisioningStyle = Automatic;
+					};
+					4D13D753FDFE4F4875382391 = {
+						DevelopmentTeam = X63G3W3XHB;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = ACD8CB115879744CBDFE9425 /* Build configuration list for PBXProject "Neiron" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = AF8DC30ED3E2F1E2B268DB72;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 7CA28BEA66FC043E092E7574 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				444CF557C0704CE02C32ABC9 /* NeironWatch */,
+				466063A7298DDF909BBBBA95 /* NeironWidgets */,
+				4D13D753FDFE4F4875382391 /* NeironiOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1CC41048B18899733683B39A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6C3F93D6A204591F5CD5181A /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3440A299C6463AFFA5B33FE1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9F2663E8000D242360ACD56E /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4BCDD5C43625809637CF76AF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D116731C08C3DECB34C62B3A /* NeironComplication.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		559182B356163E03276A9D9D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B7E878BC9C7590D845EF65F1 /* APIModels.swift in Sources */,
+				8A2B324D1868219F649AB908 /* AppConfig.swift in Sources */,
+				544813B47C97C9AD194B7879 /* AskNeironIntent.swift in Sources */,
+				D7D0A86FBBF0918A44ACD174 /* AudioManager.swift in Sources */,
+				AC5113B31C500C83EEF686C8 /* ContentView.swift in Sources */,
+				EBC51CAD3C2AC7D7160DDCEA /* ListeningSession.swift in Sources */,
+				4E8FF4E0834B66ABE2BE5B68 /* ListeningView.swift in Sources */,
+				C5E0252FB59AF8FBA28E236D /* NeironApp.swift in Sources */,
+				421EB36C5670B0D0A2E25830 /* OpenClawClient.swift in Sources */,
+				3F303C2DAFC19BCE035FAA73 /* ResponseView.swift in Sources */,
+				3C8A0DB4F6BD7AA9878FEC9C /* SilenceDetector.swift in Sources */,
+				A9A03E682EE608EA9EAF747D /* SpeechRecognizer.swift in Sources */,
+				28218EA1A260D127F8085335 /* WakeWordDetector.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		81019469937850A2D61658E9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C87C4EB16008B3F75BB3F887 /* CompanionApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		66B858B6495CC87E1633619D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 466063A7298DDF909BBBBA95 /* NeironWidgets */;
+			targetProxy = 0C5D9B559C8804DE40A82914 /* PBXContainerItemProxy */;
+		};
+		88D23F9AD19A20D354D6FB7F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NeironWatch;
+			target = 444CF557C0704CE02C32ABC9 /* NeironWatch */;
+			targetProxy = 80751DDFE0E17A4D004920FB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0489DA3E5CDB019CE4FB685E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = X63G3W3XHB;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+		1451ED1D11BD91229019D316 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = NeironWatch/Resources/NeironWatch.entitlements;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NeironWatch/Resources/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.openclaw.neiron.watchkitapp;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+		1AA7A25D2A8A2FE63BAB1876 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NeironWidgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.openclaw.neiron.watchkitapp.widgets;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+		4949C09B526CA1F0263FDF2B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NeironWidgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.openclaw.neiron.watchkitapp.widgets;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		6F103D48EBCD585331897D77 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = NeironiOS/NeironiOS.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = NeironiOS/Info.plist;
+				INSTALL_PATH = /Applications;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.openclaw.neiron;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		705BAACEDE874E205D65E1FE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = NeironiOS/NeironiOS.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = NeironiOS/Info.plist;
+				INSTALL_PATH = /Applications;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.openclaw.neiron;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		EFCF60D0AEBC3AF1A795ADD6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = X63G3W3XHB;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		F8BB36D1408B476C1B087626 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = NeironWatch/Resources/NeironWatch.entitlements;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = NeironWatch/Resources/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = com.openclaw.neiron.watchkitapp;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7932B9294A3D4EF2C480B4D9 /* Build configuration list for PBXNativeTarget "NeironWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4949C09B526CA1F0263FDF2B /* Debug */,
+				1AA7A25D2A8A2FE63BAB1876 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		ACD8CB115879744CBDFE9425 /* Build configuration list for PBXProject "Neiron" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EFCF60D0AEBC3AF1A795ADD6 /* Debug */,
+				0489DA3E5CDB019CE4FB685E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B0001C28F22BF76E78816382 /* Build configuration list for PBXNativeTarget "NeironWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F8BB36D1408B476C1B087626 /* Debug */,
+				1451ED1D11BD91229019D316 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E84B878F1E0109E4D10E37EE /* Build configuration list for PBXNativeTarget "NeironiOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6F103D48EBCD585331897D77 /* Debug */,
+				705BAACEDE874E205D65E1FE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 41DB3CACD52D33CBA46B6E84 /* Project object */;
+}

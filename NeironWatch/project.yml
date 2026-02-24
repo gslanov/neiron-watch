@@ -11,7 +11,7 @@ settings:
     SWIFT_VERSION: "5.9"
     MARKETING_VERSION: "1.0.0"
     CURRENT_PROJECT_VERSION: 1
-    DEVELOPMENT_TEAM: ${DEVELOPMENT_TEAM}
+    DEVELOPMENT_TEAM: X63G3W3XHB
     CODE_SIGN_STYLE: Automatic
 
 schemes:
@@ -19,11 +19,12 @@ schemes:
     build:
       targets:
         NeironiOS: all
+        NeironWatch: all
+        NeironWidgets: all
     archive:
       config: Release
 
 targets:
-
   NeironiOS:
     type: application
     platform: iOS
@@ -38,10 +39,6 @@ targets:
         INSTALL_PATH: "/Applications"
     entitlements:
       path: NeironiOS/NeironiOS.entitlements
-    dependencies:
-      - target: NeironWatch
-        copy:
-          destination: watch
 
   NeironWatch:
     type: application
