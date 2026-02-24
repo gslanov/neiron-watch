@@ -54,8 +54,10 @@ jobs:
 
       - name: Setup API Key
         run: |
-          mkdir -p ~/.appstoreconnect/private_keys
-          echo '${{ secrets.APPSTORE_PRIVATE_KEY }}' > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
+          mkdir -p $RUNNER_TEMP/private_keys
+          echo '${{ secrets.APPSTORE_PRIVATE_KEY }}' > $RUNNER_TEMP/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
+          echo "API key at: $RUNNER_TEMP/private_keys/"
+          ls -la $RUNNER_TEMP/private_keys/
 
       # ── 5. Generate Xcode project ─────────────────
       - name: Generate .xcodeproj
@@ -76,7 +78,7 @@ jobs:
             -archivePath $RUNNER_TEMP/NeironWatch.xcarchive \
             archive \
             -allowProvisioningUpdates \
-            -authenticationKeyPath ~/".appstoreconnect/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8" \
+            -authenticationKeyPath $RUNNER_TEMP/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 \
             -authenticationKeyID ${{ secrets.APPSTORE_KEY_ID }} \
             -authenticationKeyIssuerID ${{ secrets.APPSTORE_ISSUER_ID }} \
             CODE_SIGN_STYLE=Automatic \
@@ -105,7 +107,7 @@ jobs:
             -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist \
             -exportPath $RUNNER_TEMP/export \
             -allowProvisioningUpdates \
-            -authenticationKeyPath ~/".appstoreconnect/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8" \
+            -authenticationKeyPath $RUNNER_TEMP/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 \
             -authenticationKeyID ${{ secrets.APPSTORE_KEY_ID }} \
             -authenticationKeyIssuerID ${{ secrets.APPSTORE_ISSUER_ID }}
 
@@ -123,7 +125,7 @@ jobs:
         if: always()
         run: |
           security delete-keychain $RUNNER_TEMP/app-signing.keychain-db 2>/dev/null || true
-          rm -rf ~/.appstoreconnect/private_keys
+          rm -rf $RUNNER_TEMP/private_keys
           rm -f $RUNNER_TEMP/cert.p12
 
       # ── 10. Done ───────────────────────────────────
