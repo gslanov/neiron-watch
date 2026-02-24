@@ -5,9 +5,6 @@ on:
     branches: [main]
   workflow_dispatch:
 
-env:
-  API_KEY_PATH: /Users/runner/.appstoreconnect/private_keys
-
 jobs:
   build:
     runs-on: macos-15
@@ -26,15 +23,39 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
 
-      # ── 4. Setup App Store Connect API Key ─────────
+      # ── 4. Setup signing ───────────────────────────
+      - name: Install certificate
+        env:
+          P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12 }}
+          P12_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          # Create temp keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          KEYCHAIN_PASSWORD=$(openssl rand -hex 12)
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # Import certificate
+          echo "$P12_BASE64" | base64 --decode > $RUNNER_TEMP/cert.p12
+          security import $RUNNER_TEMP/cert.p12 \
+            -P "$P12_PASSWORD" \
+            -A \
+            -t cert \
+            -f pkcs12 \
+            -k $KEYCHAIN_PATH
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # Add to search list
+          security list-keychains -d user -s $KEYCHAIN_PATH login.keychain-db
+
+          echo "Certificate installed successfully"
+
       - name: Setup API Key
         run: |
-          mkdir -p ${{ env.API_KEY_PATH }}
-          echo '${{ secrets.APPSTORE_PRIVATE_KEY }}' > ${{ env.API_KEY_PATH }}/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
-          echo "Key file created:"
-          ls -la ${{ env.API_KEY_PATH }}/
-          echo "Key file starts with:"
-          head -1 ${{ env.API_KEY_PATH }}/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo '${{ secrets.APPSTORE_PRIVATE_KEY }}' > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
 
       # ── 5. Generate Xcode project ─────────────────
       - name: Generate .xcodeproj
@@ -55,7 +76,7 @@ jobs:
             -archivePath $RUNNER_TEMP/NeironWatch.xcarchive \
             archive \
             -allowProvisioningUpdates \
-            -authenticationKeyPath ${{ env.API_KEY_PATH }}/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 \
+            -authenticationKeyPath ~/".appstoreconnect/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8" \
             -authenticationKeyID ${{ secrets.APPSTORE_KEY_ID }} \
             -authenticationKeyIssuerID ${{ secrets.APPSTORE_ISSUER_ID }} \
             CODE_SIGN_STYLE=Automatic \
@@ -71,8 +92,6 @@ jobs:
           <dict>
               <key>method</key>
               <string>app-store-connect</string>
-              <key>teamID</key>
-              <string>${{ secrets.APPLE_TEAM_ID }}</string>
               <key>uploadSymbols</key>
               <true/>
               <key>destination</key>
@@ -86,7 +105,7 @@ jobs:
             -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist \
             -exportPath $RUNNER_TEMP/export \
             -allowProvisioningUpdates \
-            -authenticationKeyPath ${{ env.API_KEY_PATH }}/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 \
+            -authenticationKeyPath ~/".appstoreconnect/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8" \
             -authenticationKeyID ${{ secrets.APPSTORE_KEY_ID }} \
             -authenticationKeyIssuerID ${{ secrets.APPSTORE_ISSUER_ID }}
 
@@ -95,14 +114,17 @@ jobs:
         run: |
           xcrun altool --upload-app \
             --type watchos \
-            --file "$RUNNER_TEMP/export/NeironWatch.ipa" \
+            --file "$RUNNER_TEMP/export/"*.ipa \
             --apiKey ${{ secrets.APPSTORE_KEY_ID }} \
             --apiIssuer ${{ secrets.APPSTORE_ISSUER_ID }}
 
       # ── 9. Cleanup ────────────────────────────────
-      - name: Cleanup keys
+      - name: Cleanup
         if: always()
-        run: rm -rf ${{ env.API_KEY_PATH }}
+        run: |
+          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db 2>/dev/null || true
+          rm -rf ~/.appstoreconnect/private_keys
+          rm -f $RUNNER_TEMP/cert.p12
 
       # ── 10. Done ───────────────────────────────────
       - name: Build complete
