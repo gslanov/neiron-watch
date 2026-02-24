@@ -74,7 +74,7 @@ struct NeironWidgetEntryView: View {
 extension View {
     @ViewBuilder
     func applyHandGesture() -> some View {
-        if #available(watchOS 11.0, *) {
+        if #available(iOS 18.0, watchOS 11.0, *) {
             self.handGestureShortcut(.primaryAction)
         } else {
             self
