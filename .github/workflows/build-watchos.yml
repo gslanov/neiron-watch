@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  API_KEY_PATH: /Users/runner/private_keys
+  API_KEY_PATH: /Users/runner/.appstoreconnect/private_keys
 
 jobs:
   build:
