@@ -71,15 +71,13 @@ jobs:
         run: |
           # 1. Create API key JSON for fastlane
           mkdir -p /tmp/profiles
-          KEY_CONTENT=$(cat "$API_KEY_PATH")
-          cat > /tmp/api_key.json << APIKEYEOF
-          {
-            "key_id": "$ASC_KEY_ID",
-            "issuer_id": "$ASC_ISSUER_ID",
-            "key": "$KEY_CONTENT",
-            "in_house": false
-          }
-          APIKEYEOF
+          python3 -c "
+          import json
+          key = open('$API_KEY_PATH').read()
+          j = {'key_id': '$ASC_KEY_ID', 'issuer_id': '$ASC_ISSUER_ID', 'key': key, 'in_house': False}
+          open('/tmp/api_key.json','w').write(json.dumps(j, indent=2))
+          print('API key JSON created')
+          "
 
           fastlane run get_provisioning_profile \
             api_key_path:"/tmp/api_key.json" \
