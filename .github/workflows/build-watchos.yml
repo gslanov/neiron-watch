@@ -19,14 +19,9 @@ jobs:
 
       - name: Install watchOS platform
         run: |
-          # Check if watchOS SDK already present
           xcodebuild -showsdks 2>&1 | grep -i watch && echo "watchOS SDK found" && exit 0
-          # Try downloading
-          echo "Downloading watchOS platform..."
           xcodebuild -downloadPlatform watchOS 2>&1 || true
           sudo xcodebuild -downloadPlatform watchOS 2>&1 || true
-          # Verify
-          xcodebuild -showsdks 2>&1 | grep -i watch || echo "WARNING: watchOS SDK not available"
           xcodebuild -showsdks
 
       - name: Install XcodeGen
@@ -38,7 +33,6 @@ jobs:
           DEVELOPMENT_TEAM: ${{ secrets.APPLE_TEAM_ID }}
         run: xcodegen generate
 
-      # ── Install certificate into keychain ──────────
       - name: Install signing certificate
         env:
           P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12 }}
@@ -61,7 +55,6 @@ jobs:
           echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
           echo "KEYCHAIN_PASSWORD=$KEYCHAIN_PASSWORD" >> $GITHUB_ENV
 
-      # ── Setup API key for provisioning ─────────────
       - name: Setup API Key
         run: |
           mkdir -p $RUNNER_TEMP/private_keys
@@ -70,11 +63,9 @@ jobs:
           KEYEOF
           echo "API_KEY_PATH=$RUNNER_TEMP/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8" >> $GITHUB_ENV
 
-      # ── Install fastlane ───────────────────────────
       - name: Install fastlane
         run: gem install fastlane --no-document
 
-      # ── Create Fastlane config ─────────────────────
       - name: Setup Fastlane
         working-directory: NeironWatch
         run: |
@@ -83,7 +74,7 @@ jobs:
           default_platform(:ios)
 
           platform :ios do
-            desc "Build watchOS and upload to TestFlight"
+            desc "Build iOS+watchOS and upload to TestFlight"
             lane :release do
               api_key = app_store_connect_api_key(
                 key_id: ENV["ASC_KEY_ID"],
@@ -91,48 +82,61 @@ jobs:
                 key_filepath: ENV["API_KEY_PATH"]
               )
 
-              # Download and install provisioning profiles via sigh
-              watch_uuid = get_provisioning_profile(
+              # Download App Store profiles for ALL THREE targets
+              get_provisioning_profile(
+                api_key: api_key,
+                app_identifier: "com.openclaw.neiron",
+                platform: "ios",
+                output_path: "/tmp/profiles"
+              )
+              ios_profile_uuid = lane_context[SharedValues::SIGH_UDID]
+              UI.message("iOS stub profile: #{ios_profile_uuid}")
+
+              get_provisioning_profile(
                 api_key: api_key,
                 app_identifier: "com.openclaw.neiron.watchkitapp",
                 platform: "ios",
                 output_path: "/tmp/profiles"
               )
               watch_profile_uuid = lane_context[SharedValues::SIGH_UDID]
-              watch_profile_name = lane_context[SharedValues::SIGH_NAME]
-              UI.message("Watch profile: #{watch_profile_name} (#{watch_profile_uuid})")
+              UI.message("Watch profile: #{watch_profile_uuid}")
 
-              widget_uuid = get_provisioning_profile(
+              get_provisioning_profile(
                 api_key: api_key,
                 app_identifier: "com.openclaw.neiron.watchkitapp.widgets",
                 platform: "ios",
                 output_path: "/tmp/profiles"
               )
               widget_profile_uuid = lane_context[SharedValues::SIGH_UDID]
-              widget_profile_name = lane_context[SharedValues::SIGH_NAME]
-              UI.message("Widget profile: #{widget_profile_name} (#{widget_profile_uuid})")
+              UI.message("Widget profile: #{widget_profile_uuid}")
 
-              # Extract missing certificate from profile and import to keychain
-              UI.message("Extracting certificate from provisioning profile...")
-              profile_data = `security cms -D -i /tmp/profiles/AppStore_com.openclaw.neiron.watchkitapp.mobileprovision`
+              # Extract and import certificate from provisioning profile
+              profile_data = `security cms -D -i /tmp/profiles/AppStore_com.openclaw.neiron.mobileprovision`
               cert_match = profile_data.match(/<key>DeveloperCertificates<\/key>\s*<array>\s*<data>\s*(.*?)\s*<\/data>/m)
               if cert_match
                 require 'base64'
                 File.open("/tmp/cert.cer", "wb") { |f| f.write(Base64.decode64(cert_match[1])) }
                 sh("security import /tmp/cert.cer -k \"#{ENV['KEYCHAIN_PATH']}\" -A || true")
                 sh("security set-key-partition-list -S apple-tool:,apple: -k \"#{ENV['KEYCHAIN_PASSWORD']}\" \"#{ENV['KEYCHAIN_PATH']}\"")
-                UI.message("Successfully extracted and imported certificate!")
-              else
-                UI.error("Failed to find DeveloperCertificates in profile!")
               end
 
-              # Set manual signing per-target with profile UUID in pbxproj
+              # Set manual signing for all targets
+              sign_id = "Apple Distribution: George Slanov (#{ENV['TEAM_ID']})"
+
+              update_code_signing_settings(
+                path: "Neiron.xcodeproj",
+                targets: ["NeironiOS"],
+                use_automatic_signing: false,
+                team_id: ENV["TEAM_ID"],
+                code_sign_identity: sign_id,
+                profile_uuid: ios_profile_uuid
+              )
               update_code_signing_settings(
                 path: "Neiron.xcodeproj",
                 targets: ["NeironWatch"],
                 use_automatic_signing: false,
                 team_id: ENV["TEAM_ID"],
-                code_sign_identity: "Apple Distribution: George Slanov (X63G3W3XHB)",
+                code_sign_identity: sign_id,
                 profile_uuid: watch_profile_uuid
               )
               update_code_signing_settings(
@@ -140,60 +144,70 @@ jobs:
                 targets: ["NeironWidgets"],
                 use_automatic_signing: false,
                 team_id: ENV["TEAM_ID"],
-                code_sign_identity: "Apple Distribution: George Slanov (X63G3W3XHB)",
+                code_sign_identity: sign_id,
                 profile_uuid: widget_profile_uuid
               )
 
               project_path = File.expand_path("../Neiron.xcodeproj", __dir__)
-              archive_path = "/tmp/NeironWatch.xcarchive"
+              archive_path = "/tmp/Neiron.xcarchive"
               export_path = "/tmp/export"
 
-              UI.message("Project path: #{project_path}")
-
-              UI.message("Archiving project...")
+              # Archive the iOS SCHEME (embeds watchOS app inside)
+              UI.message("Archiving iOS scheme (embeds watchOS)...")
               sh(
                 "xcodebuild",
                 "archive",
                 "-project", project_path,
-                "-scheme", "NeironWatch",
-                "-sdk", "watchos",
+                "-scheme", "Neiron",
+                "-destination", "generic/platform=iOS",
                 "-archivePath", archive_path
               )
 
-              # Skip xcodebuild -exportArchive (no app-store method for watchOS)
-              # Manually create IPA from archive with correct signing
-              UI.message("Creating IPA manually from archive...")
-              sh("rm -rf /tmp/ipa_build && mkdir -p /tmp/ipa_build/Payload")
-              sh("cp -R #{archive_path}/Products/Applications/NeironWatch.app /tmp/ipa_build/Payload/")
+              # Export + Upload directly to App Store Connect
+              UI.message("Exporting and uploading to TestFlight...")
+              export_plist_path = "/tmp/ExportOptions.plist"
+              File.write(export_plist_path, <<~PLIST)
+                <?xml version="1.0" encoding="UTF-8"?>
+                <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+                <plist version="1.0">
+                <dict>
+                  <key>method</key>
+                  <string>app-store-connect</string>
+                  <key>destination</key>
+                  <string>upload</string>
+                  <key>teamID</key>
+                  <string>#{ENV['TEAM_ID']}</string>
+                  <key>signingStyle</key>
+                  <string>manual</string>
+                  <key>manageAppVersionAndBuildNumber</key>
+                  <true/>
+                  <key>provisioningProfiles</key>
+                  <dict>
+                    <key>com.openclaw.neiron</key>
+                    <string>#{ios_profile_uuid}</string>
+                    <key>com.openclaw.neiron.watchkitapp</key>
+                    <string>#{watch_profile_uuid}</string>
+                    <key>com.openclaw.neiron.watchkitapp.widgets</key>
+                    <string>#{widget_profile_uuid}</string>
+                  </dict>
+                </dict>
+                </plist>
+              PLIST
 
-              # Install App Store provisioning profiles
-              watch_profile = Dir["/tmp/profiles/AppStore_com.openclaw.neiron.watchkitapp.mobileprovision"].first
-              widget_profile = Dir["/tmp/profiles/AppStore_com.openclaw.neiron.watchkitapp.widgets.mobileprovision"].first
-
-              sh("cp '#{widget_profile}' /tmp/ipa_build/Payload/NeironWatch.app/PlugIns/NeironWidgets.appex/embedded.mobileprovision")
-              sh("cp '#{watch_profile}' /tmp/ipa_build/Payload/NeironWatch.app/embedded.mobileprovision")
-
-              # Re-sign with Distribution cert and App Store profiles
-              sign_id = "Apple Distribution: George Slanov (X63G3W3XHB)"
-              sh("codesign -f -s '#{sign_id}' --preserve-metadata=identifier,entitlements /tmp/ipa_build/Payload/NeironWatch.app/PlugIns/NeironWidgets.appex")
-              sh("codesign -f -s '#{sign_id}' --preserve-metadata=identifier,entitlements /tmp/ipa_build/Payload/NeironWatch.app")
-
-              sh("mkdir -p #{export_path}")
-              sh("cd /tmp/ipa_build && zip -qr #{export_path}/Neiron.ipa Payload/")
-
-              ipa_path = Dir[File.join(export_path, "*.ipa")].first
-              UI.message("Found IPA at: #{ipa_path}")
-
-              upload_to_testflight(
-                api_key: api_key,
-                ipa: ipa_path,
-                skip_waiting_for_build_processing: true
+              sh(
+                "xcodebuild",
+                "-exportArchive",
+                "-archivePath", archive_path,
+                "-exportPath", export_path,
+                "-exportOptionsPlist", export_plist_path,
+                "-allowProvisioningUpdates"
               )
+
+              UI.success("Build uploaded to TestFlight!")
             end
           end
           FASTLANE
 
-      # ── Build & Upload ─────────────────────────────
       - name: Build and upload to TestFlight
         working-directory: NeironWatch
         env:
@@ -202,7 +216,6 @@ jobs:
           TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: fastlane ios release
 
-      # ── Cleanup ────────────────────────────────────
       - name: Cleanup
         if: always()
         run: |
