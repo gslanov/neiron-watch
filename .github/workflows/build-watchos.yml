@@ -128,20 +128,20 @@ jobs:
                 profile_uuid: widget_profile_uuid
               )
 
+              project_path = File.expand_path("../Neiron.xcodeproj", __dir__)
               archive_path = "/tmp/NeironWatch.xcarchive"
               export_path = "/tmp/export"
+
+              UI.message("Project path: #{project_path}")
 
               UI.message("Archiving project...")
               sh(
                 "xcodebuild",
                 "archive",
-                "-project", "../Neiron.xcodeproj",
+                "-project", project_path,
                 "-scheme", "NeironWatch",
                 "-sdk", "watchos",
-                "-archivePath", archive_path,
-                "CODE_SIGN_STYLE=Manual",
-                "DEVELOPMENT_TEAM=#{ENV['TEAM_ID']}",
-                "CODE_SIGN_IDENTITY=Apple Distribution"
+                "-archivePath", archive_path
               )
 
               UI.message("Creating ExportOptions.plist...")
