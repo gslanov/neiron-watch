@@ -44,7 +44,7 @@ targets:
           destination: watch
 
   NeironWatch:
-    type: watchApp
+    type: application
     platform: watchOS
     deploymentTarget: "10.0"
     sources:
