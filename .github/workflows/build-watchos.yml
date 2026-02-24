@@ -199,7 +199,10 @@ jobs:
                 "-archivePath", archive_path,
                 "-exportPath", export_path,
                 "-exportOptionsPlist", export_plist_path,
-                "-allowProvisioningUpdates"
+                "-allowProvisioningUpdates",
+                "-authenticationKeyPath", ENV["API_KEY_PATH"],
+                "-authenticationKeyID", ENV["ASC_KEY_ID"],
+                "-authenticationKeyIssuerID", ENV["ASC_ISSUER_ID"]
               )
 
               UI.success("Build uploaded to TestFlight!")
