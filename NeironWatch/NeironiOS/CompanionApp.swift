@@ -1,7 +1,6 @@
 import SwiftUI
 
-// NOTE: @main is declared in the Xcode target's entry point file.
-// This struct is used as the App body for the NeironiOS target.
+@main
 struct CompanionApp: App {
     var body: some Scene {
         WindowGroup {
