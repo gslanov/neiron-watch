@@ -15,10 +15,10 @@ settings:
     CODE_SIGN_STYLE: Automatic
 
 schemes:
-  NeironWatch:
+  Neiron:
     build:
       targets:
-        NeironWatch: all
+        NeironiOS: all
     archive:
       config: Release
 
@@ -34,11 +34,17 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.openclaw.neiron
         INFOPLIST_FILE: NeironiOS/Info.plist
+        SKIP_INSTALL: "NO"
+        INSTALL_PATH: "/Applications"
     entitlements:
       path: NeironiOS/NeironiOS.entitlements
+    dependencies:
+      - target: NeironWatch
+        copy:
+          destination: watch
 
   NeironWatch:
-    type: application
+    type: watchApp
     platform: watchOS
     deploymentTarget: "10.0"
     sources:
@@ -48,8 +54,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.openclaw.neiron.watchkitapp
         INFOPLIST_FILE: NeironWatch/Resources/Info.plist
         GENERATE_INFOPLIST_FILE: false
-        SKIP_INSTALL: "NO"
-        INSTALL_PATH: "/Applications"
+        SKIP_INSTALL: "YES"
     entitlements:
       path: NeironWatch/Resources/NeironWatch.entitlements
     dependencies:

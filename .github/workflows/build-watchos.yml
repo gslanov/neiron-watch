@@ -52,15 +52,15 @@ jobs:
           echo "KEYCHAIN_PASSWORD=$KEYCHAIN_PASSWORD" >> $GITHUB_ENV
 
       - name: Setup API Key
+        env:
+          ASC_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+          APPSTORE_PRIVATE_KEY: ${{ secrets.APPSTORE_PRIVATE_KEY }}
         run: |
-          mkdir -p $RUNNER_TEMP/private_keys
-          cat > $RUNNER_TEMP/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 << 'KEYEOF'
-          ${{ secrets.APPSTORE_PRIVATE_KEY }}
-          KEYEOF
-          echo "API_KEY_PATH=$RUNNER_TEMP/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8" >> $GITHUB_ENV
-
-      - name: Install fastlane
-        run: gem install fastlane --no-document
+          mkdir -p $RUNNER_TEMP/private_keys ~/private_keys
+          echo "$APPSTORE_PRIVATE_KEY" > $RUNNER_TEMP/private_keys/AuthKey_${ASC_KEY_ID}.p8
+          cp $RUNNER_TEMP/private_keys/AuthKey_${ASC_KEY_ID}.p8 ~/private_keys/
+          echo "API_KEY_PATH=$RUNNER_TEMP/private_keys/AuthKey_${ASC_KEY_ID}.p8" >> $GITHUB_ENV
 
       - name: Build and upload to TestFlight
         working-directory: NeironWatch
@@ -69,98 +69,43 @@ jobs:
           ASC_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
           TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          # 1. Create API key JSON for fastlane
-          mkdir -p /tmp/profiles
-          python3 -c "
-          import json
-          key = open('$API_KEY_PATH').read()
-          j = {'key_id': '$ASC_KEY_ID', 'issuer_id': '$ASC_ISSUER_ID', 'key': key, 'in_house': False}
-          open('/tmp/api_key.json','w').write(json.dumps(j, indent=2))
-          print('API key JSON created')
-          "
-
-          fastlane run get_provisioning_profile \
-            api_key_path:"/tmp/api_key.json" \
-            app_identifier:"com.openclaw.neiron.watchkitapp" \
-            platform:"ios" output_path:"/tmp/profiles" 2>&1 || true
-
-          fastlane run get_provisioning_profile \
-            api_key_path:"/tmp/api_key.json" \
-            app_identifier:"com.openclaw.neiron.watchkitapp.widgets" \
-            platform:"ios" output_path:"/tmp/profiles" 2>&1 || true
-
-          # Get profile UUIDs
-          WATCH_PROFILE=$(ls /tmp/profiles/AppStore_com.openclaw.neiron.watchkitapp.mobileprovision 2>/dev/null)
-          WIDGET_PROFILE=$(ls /tmp/profiles/AppStore_com.openclaw.neiron.watchkitapp.widgets.mobileprovision 2>/dev/null)
-
-          WATCH_UUID=$(security cms -D -i "$WATCH_PROFILE" | grep -A1 UUID | grep string | sed 's/.*<string>//' | sed 's/<\/string>//')
-          WIDGET_UUID=$(security cms -D -i "$WIDGET_PROFILE" | grep -A1 UUID | grep string | sed 's/.*<string>//' | sed 's/<\/string>//')
-
-          echo "Watch profile: $WATCH_UUID"
-          echo "Widget profile: $WIDGET_UUID"
-
-          # Import cert from profile
-          security cms -D -i "$WATCH_PROFILE" | python3 -c "
-          import sys, re, base64
-          data = sys.stdin.read()
-          m = re.search(r'<key>DeveloperCertificates</key>\s*<array>\s*<data>\s*(.*?)\s*</data>', data, re.DOTALL)
-          if m: open('/tmp/cert.cer','wb').write(base64.b64decode(m.group(1)))
-          "
-          security import /tmp/cert.cer -k "$KEYCHAIN_PATH" -A 2>/dev/null || true
-          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-
-          # 2. Set manual signing
-          SIGN_ID="Apple Distribution: George Slanov ($TEAM_ID)"
-
-          fastlane run update_code_signing_settings \
-            path:"Neiron.xcodeproj" targets:"NeironWatch" \
-            use_automatic_signing:false team_id:"$TEAM_ID" \
-            code_sign_identity:"$SIGN_ID" profile_uuid:"$WATCH_UUID"
-
-          fastlane run update_code_signing_settings \
-            path:"Neiron.xcodeproj" targets:"NeironWidgets" \
-            use_automatic_signing:false team_id:"$TEAM_ID" \
-            code_sign_identity:"$SIGN_ID" profile_uuid:"$WIDGET_UUID"
-
-          # 3. Archive watchOS scheme directly
-          echo "=== Archiving watchOS ==="
+          echo "=== Archiving iOS+watchOS ==="
           xcodebuild archive \
             -project Neiron.xcodeproj \
-            -scheme NeironWatch \
-            -sdk watchos \
-            -archivePath /tmp/Neiron.xcarchive
+            -scheme Neiron \
+            -sdk iphoneos \
+            -archivePath /tmp/Neiron.xcarchive \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$API_KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
 
-          # 4. Manually create IPA from archive
-          echo "=== Creating IPA ==="
-          rm -rf /tmp/ipa_build
-          mkdir -p /tmp/ipa_build/Payload
-          cp -R /tmp/Neiron.xcarchive/Products/Applications/NeironWatch.app /tmp/ipa_build/Payload/
+          echo "=== Exporting + Uploading ==="
+          cat > /tmp/ExportOptions.plist << 'PLISTEOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>app-store-connect</string>
+              <key>destination</key>
+              <string>upload</string>
+              <key>signingStyle</key>
+              <string>automatic</string>
+              <key>manageAppVersionAndBuildNumber</key>
+              <true/>
+          </dict>
+          </plist>
+          PLISTEOF
 
-          # Install App Store profiles
-          cp "$WATCH_PROFILE" /tmp/ipa_build/Payload/NeironWatch.app/embedded.mobileprovision
-          cp "$WIDGET_PROFILE" /tmp/ipa_build/Payload/NeironWatch.app/PlugIns/NeironWidgets.appex/embedded.mobileprovision
-
-          # Re-sign with Distribution cert + App Store profiles
-          codesign -f -s "$SIGN_ID" --preserve-metadata=identifier,entitlements \
-            /tmp/ipa_build/Payload/NeironWatch.app/PlugIns/NeironWidgets.appex
-          codesign -f -s "$SIGN_ID" --preserve-metadata=identifier,entitlements \
-            /tmp/ipa_build/Payload/NeironWatch.app
-
-          cd /tmp/ipa_build
-          zip -qr /tmp/Neiron.ipa Payload/
-
-          # 5. Upload to TestFlight via altool
-          echo "=== Uploading to TestFlight ==="
-          mkdir -p ~/private_keys
-          cp "$API_KEY_PATH" ~/private_keys/
-          xcrun altool --upload-package /tmp/Neiron.ipa \
-            -t ios \
-            --apple-id "6759602736" \
-            --bundle-id "com.openclaw.neiron.watchkitapp" \
-            --bundle-version "1" \
-            --bundle-short-version-string "1.0" \
-            --apiKey "$ASC_KEY_ID" \
-            --apiIssuer "$ASC_ISSUER_ID"
+          xcodebuild -exportArchive \
+            -archivePath /tmp/Neiron.xcarchive \
+            -exportPath /tmp/export \
+            -exportOptionsPlist /tmp/ExportOptions.plist \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$API_KEY_PATH" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
 
           echo "=== Upload complete! ==="
 
@@ -168,4 +113,4 @@ jobs:
         if: always()
         run: |
           security delete-keychain $RUNNER_TEMP/app-signing.keychain-db 2>/dev/null || true
-          rm -rf $RUNNER_TEMP/private_keys $RUNNER_TEMP/cert.p12
+          rm -rf $RUNNER_TEMP/private_keys ~/private_keys
