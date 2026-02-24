@@ -151,6 +151,8 @@ jobs:
 
           # 5. Upload to TestFlight via altool
           echo "=== Uploading to TestFlight ==="
+          mkdir -p ~/private_keys
+          cp "$API_KEY_PATH" ~/private_keys/
           xcrun altool --upload-package /tmp/Neiron.ipa \
             -t ios \
             --apple-id "6759602736" \
