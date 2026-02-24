@@ -110,39 +110,20 @@ jobs:
               widget_profile_name = lane_context[SharedValues::SIGH_NAME]
               UI.message("Widget profile: #{widget_profile_name} (#{widget_profile_uuid})")
 
-              # Set manual signing per-target with profile UUIDs
-              update_code_signing_settings(
-                path: "Neiron.xcodeproj",
-                targets: "NeironWatch",
-                use_automatic_signing: false,
-                team_id: ENV["TEAM_ID"],
-                code_sign_identity: "Apple Distribution",
-                profile_uuid: watch_profile_uuid,
-                profile_name: watch_profile_name
-              )
-              update_code_signing_settings(
-                path: "Neiron.xcodeproj",
-                targets: "NeironWidgets",
-                use_automatic_signing: false,
-                team_id: ENV["TEAM_ID"],
-                code_sign_identity: "Apple Distribution",
-                profile_uuid: widget_profile_uuid,
-                profile_name: widget_profile_name
-              )
-
+              # Use automatic signing — cert is in keychain, profiles installed
+              # xcodebuild will match them by bundle ID
               build_app(
                 project: "Neiron.xcodeproj",
                 scheme: "NeironWatch",
                 destination: "generic/platform=watchOS",
                 configuration: "Release",
                 export_method: "app-store",
+                xcargs: "CODE_SIGN_STYLE=Automatic " \
+                        "DEVELOPMENT_TEAM='#{ENV['TEAM_ID']}' " \
+                        "CODE_SIGN_IDENTITY='Apple Distribution'",
                 export_options: {
-                  signingStyle: "manual",
-                  teamID: ENV["TEAM_ID"],
-                  provisioningProfiles: {
-                    "com.openclaw.neiron.watchkitapp" => watch_profile_name,
-                    "com.openclaw.neiron.watchkitapp.widgets" => widget_profile_name
-                  }
+                  signingStyle: "automatic",
+                  teamID: ENV["TEAM_ID"]
                 }
               )
 
