@@ -13,6 +13,14 @@ settings:
     CURRENT_PROJECT_VERSION: 1
     DEVELOPMENT_TEAM: ${DEVELOPMENT_TEAM}
 
+schemes:
+  NeironWatch:
+    build:
+      targets:
+        NeironWatch: all
+    archive:
+      config: Release
+
 targets:
 
   NeironiOS:
