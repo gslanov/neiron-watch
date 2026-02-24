@@ -119,7 +119,7 @@ jobs:
               if cert_match
                 require 'base64'
                 File.open("/tmp/cert.cer", "wb") { |f| f.write(Base64.decode64(cert_match[1])) }
-                sh("security import /tmp/cert.cer -k \"#{ENV['KEYCHAIN_PATH']}\" -A")
+                sh("security import /tmp/cert.cer -k \"#{ENV['KEYCHAIN_PATH']}\" -A || true")
                 sh("security set-key-partition-list -S apple-tool:,apple: -k \"#{ENV['KEYCHAIN_PASSWORD']}\" \"#{ENV['KEYCHAIN_PATH']}\"")
                 UI.message("Successfully extracted and imported certificate!")
               else
