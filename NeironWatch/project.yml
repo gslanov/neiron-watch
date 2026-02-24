@@ -61,7 +61,7 @@ targets:
 
   # ── Widget Extension ───────────────────────────────
   NeironWidgets:
-    type: appExtension
+    type: app-extension
     platform: watchOS
     deploymentTarget: "10.0"
     sources:
