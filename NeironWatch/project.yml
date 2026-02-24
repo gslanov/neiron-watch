@@ -55,7 +55,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.openclaw.neiron.watchkitapp
         INFOPLIST_FILE: NeironWatch/Resources/Info.plist
         GENERATE_INFOPLIST_FILE: false
-        SKIP_INSTALL: "NO"
+        SKIP_INSTALL: "YES"
     entitlements:
       path: NeironWatch/Resources/NeironWatch.entitlements
     dependencies:
