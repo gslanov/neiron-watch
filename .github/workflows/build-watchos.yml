@@ -5,6 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  API_KEY_PATH: /Users/runner/private_keys
+
 jobs:
   build:
     runs-on: macos-15
@@ -26,8 +29,12 @@ jobs:
       # ── 4. Setup App Store Connect API Key ─────────
       - name: Setup API Key
         run: |
-          mkdir -p ~/private_keys
-          echo "${{ secrets.APPSTORE_PRIVATE_KEY }}" > ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
+          mkdir -p ${{ env.API_KEY_PATH }}
+          echo '${{ secrets.APPSTORE_PRIVATE_KEY }}' > ${{ env.API_KEY_PATH }}/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
+          echo "Key file created:"
+          ls -la ${{ env.API_KEY_PATH }}/
+          echo "Key file starts with:"
+          head -1 ${{ env.API_KEY_PATH }}/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8
 
       # ── 5. Generate Xcode project ─────────────────
       - name: Generate .xcodeproj
@@ -48,7 +55,7 @@ jobs:
             -archivePath $RUNNER_TEMP/NeironWatch.xcarchive \
             archive \
             -allowProvisioningUpdates \
-            -authenticationKeyPath ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 \
+            -authenticationKeyPath ${{ env.API_KEY_PATH }}/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 \
             -authenticationKeyID ${{ secrets.APPSTORE_KEY_ID }} \
             -authenticationKeyIssuerID ${{ secrets.APPSTORE_ISSUER_ID }} \
             CODE_SIGN_STYLE=Automatic \
@@ -57,7 +64,7 @@ jobs:
       # ── 7. Export .ipa ────────────────────────────
       - name: Export IPA
         run: |
-          cat > $RUNNER_TEMP/ExportOptions.plist << EOF
+          cat > $RUNNER_TEMP/ExportOptions.plist << 'PLIST'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
@@ -72,25 +79,20 @@ jobs:
               <string>upload</string>
           </dict>
           </plist>
-          EOF
+          PLIST
 
           xcodebuild -exportArchive \
             -archivePath $RUNNER_TEMP/NeironWatch.xcarchive \
             -exportOptionsPlist $RUNNER_TEMP/ExportOptions.plist \
             -exportPath $RUNNER_TEMP/export \
             -allowProvisioningUpdates \
-            -authenticationKeyPath ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 \
+            -authenticationKeyPath ${{ env.API_KEY_PATH }}/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 \
             -authenticationKeyID ${{ secrets.APPSTORE_KEY_ID }} \
             -authenticationKeyIssuerID ${{ secrets.APPSTORE_ISSUER_ID }}
 
       # ── 8. Upload to TestFlight ───────────────────
       - name: Upload to TestFlight
         run: |
-          xcrun notarytool store-credentials "AC_API" \
-            --key ~/private_keys/AuthKey_${{ secrets.APPSTORE_KEY_ID }}.p8 \
-            --key-id ${{ secrets.APPSTORE_KEY_ID }} \
-            --issuer ${{ secrets.APPSTORE_ISSUER_ID }}
-
           xcrun altool --upload-app \
             --type watchos \
             --file "$RUNNER_TEMP/export/NeironWatch.ipa" \
@@ -100,7 +102,7 @@ jobs:
       # ── 9. Cleanup ────────────────────────────────
       - name: Cleanup keys
         if: always()
-        run: rm -rf ~/private_keys
+        run: rm -rf ${{ env.API_KEY_PATH }}
 
       # ── 10. Done ───────────────────────────────────
       - name: Build complete
