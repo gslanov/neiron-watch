@@ -14,7 +14,7 @@ settings:
     DEVELOPMENT_TEAM: ${DEVELOPMENT_TEAM}
   configs:
     Release:
-      CODE_SIGN_IDENTITY: "Apple Distribution"
+      CODE_SIGN_IDENTITY: "Apple Distribution: George Slanov (X63G3W3XH8)"
 
 schemes:
   NeironWatch:
@@ -50,7 +50,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.openclaw.neiron.watchkitapp
         CODE_SIGN_STYLE: Automatic
-        CODE_SIGN_IDENTITY: "Apple Distribution"
+        CODE_SIGN_IDENTITY: "Apple Distribution: George Slanov (X63G3W3XH8)"
         INFOPLIST_FILE: NeironWatch/Resources/Info.plist
         GENERATE_INFOPLIST_FILE: false
     entitlements:
@@ -69,7 +69,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.openclaw.neiron.watchkitapp.widgets
         CODE_SIGN_STYLE: Automatic
-        CODE_SIGN_IDENTITY: "Apple Distribution"
+        CODE_SIGN_IDENTITY: "Apple Distribution: George Slanov (X63G3W3XH8)"
         GENERATE_INFOPLIST_FILE: true
         INFOPLIST_KEY_CFBundleDisplayName: NeironWidgets
         INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier: com.apple.widgetkit-extension
