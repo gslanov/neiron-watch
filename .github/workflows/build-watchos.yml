@@ -159,6 +159,7 @@ jobs:
                 "archive",
                 "-project", project_path,
                 "-scheme", "Neiron",
+                "-sdk", "iphoneos",
                 "-archivePath", archive_path
               )
 
