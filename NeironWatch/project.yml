@@ -38,6 +38,7 @@ targets:
         INFOPLIST_FILE: NeironiOS/Info.plist
         SKIP_INSTALL: "NO"
         INSTALL_PATH: "/Applications"
+        ASSETCATALOG_COMPILER_SKIP_VALIDATION: "YES"
     entitlements:
       path: NeironiOS/NeironiOS.entitlements
     dependencies:
