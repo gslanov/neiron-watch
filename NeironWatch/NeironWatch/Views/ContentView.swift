@@ -40,16 +40,20 @@ struct ContentView: View {
                     .font(.headline)
                     .foregroundColor(.primary)
 
-                // Main "Listen" button — opens listening mode
+                // Main "Listen" button — starts recording with extended session
                 Button {
                     isShowingListening = true
+                    listeningSession.onPromptReady = { [self] url in
+                        isShowingListening = false
+                        processAudioFile(url)
+                    }
                     listeningSession.startListening()
                 } label: {
                     ZStack {
                         Circle()
                             .fill(Color.blue)
                             .frame(width: 64, height: 64)
-                        Image(systemName: "ear")
+                        Image(systemName: "mic.fill")
                             .font(.title2)
                             .foregroundColor(.white)
                     }
@@ -90,10 +94,6 @@ struct ContentView: View {
             // Listening overlay
             .sheet(isPresented: $isShowingListening, onDismiss: {
                 listeningSession.stopListening()
-                // If wake word was detected — start actual recording
-                if case .wakeWordDetected = listeningSession.state {
-                    startImmediateRecording()
-                }
             }) {
                 ListeningView(listeningSession: listeningSession)
             }
@@ -111,13 +111,6 @@ struct ContentView: View {
         .onChange(of: startRecording) { _, newVal in
             if newVal {
                 startRecording = false
-                startImmediateRecording()
-            }
-        }
-        // Handle wake word → auto record
-        .onChange(of: listeningSession.state) { _, state in
-            if case .wakeWordDetected = state {
-                isShowingListening = false
                 startImmediateRecording()
             }
         }
@@ -170,46 +163,38 @@ struct ContentView: View {
             await MainActor.run { errorMessage = "Файл записи не найден" }
             return
         }
+        processAudioFile(audioURL)
+    }
 
-        await MainActor.run { isProcessing = true }
+    private func processAudioFile(_ audioURL: URL) {
+        Task {
+            await MainActor.run { isProcessing = true }
 
-        do {
-            let speechRecognizer = SpeechRecognizer()
-            let transcript = try await speechRecognizer.transcribe(audioURL: audioURL)
+            do {
+                let speechRecognizer = SpeechRecognizer()
+                let transcript = try await speechRecognizer.transcribe(audioURL: audioURL)
 
-            guard !transcript.isEmpty else {
+                guard !transcript.isEmpty else {
+                    await MainActor.run {
+                        isProcessing = false
+                        errorMessage = "Не удалось распознать речь"
+                    }
+                    return
+                }
+
+                let reply = try await apiClient.sendMessage(transcript)
+
                 await MainActor.run {
                     isProcessing = false
-                    errorMessage = "Не удалось распознать речь"
+                    responseText = reply
+                    isShowingResponse = true
                 }
-                return
+            } catch {
+                await MainActor.run {
+                    isProcessing = false
+                    errorMessage = error.localizedDescription
+                }
             }
-
-            let reply = try await apiClient.sendMessage(transcript)
-
-            await MainActor.run {
-                isProcessing = false
-                responseText = reply
-                isShowingResponse = true
-            }
-        } catch {
-            await MainActor.run {
-                isProcessing = false
-                errorMessage = error.localizedDescription
-            }
-        }
-    }
-}
-
-// MARK: - Hand Gesture availability wrapper
-
-extension View {
-    @ViewBuilder
-    func applyHandGesture() -> some View {
-        if #available(iOS 18.0, watchOS 11.0, *) {
-            self.handGestureShortcut(.primaryAction)
-        } else {
-            self
         }
     }
 }

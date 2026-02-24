@@ -12,35 +12,33 @@ struct CompanionApp: App {
 // MARK: - Root View
 
 struct CompanionRootView: View {
-    @AppStorage("serverURL") private var serverURL: String = "http://192.168.1.5:18789"
-    @AppStorage("bearerToken") private var bearerToken: String = ""
-
     var body: some View {
         NavigationStack {
-            Form {
-                Section("Сервер") {
-                    LabeledContent("URL") {
-                        TextField("http://...", text: $serverURL)
-                            .keyboardType(.URL)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                            .multilineTextAlignment(.trailing)
-                    }
+            VStack(spacing: 20) {
+                Image(systemName: "applewatch")
+                    .font(.system(size: 64))
+                    .foregroundColor(.blue)
 
-                    LabeledContent("API Token") {
-                        SecureField("Bearer token", text: $bearerToken)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                            .multilineTextAlignment(.trailing)
-                    }
-                }
+                Text("Neiron")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
 
-                Section("О приложении") {
-                    LabeledContent("Приложение", value: "Neiron")
-                    LabeledContent("Платформа", value: "Apple Watch")
+                Text("Neiron работает на Apple Watch")
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+
+                Spacer()
+
+                VStack(spacing: 8) {
                     LabeledContent("Версия", value: "1.0.0")
+                    LabeledContent("Платформа", value: "Apple Watch")
                 }
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .padding()
             }
+            .padding()
             .navigationTitle("Neiron")
             .navigationBarTitleDisplayMode(.large)
         }

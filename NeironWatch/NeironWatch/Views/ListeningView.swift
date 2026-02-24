@@ -7,12 +7,12 @@ struct ListeningView: View {
 
     private var statusColor: Color {
         switch listeningSession.state {
-        case .wakeWordDetected:
-            return .green
         case .recording:
             return .red
         case .processing:
             return .orange
+        case .error:
+            return .red
         default:
             return .blue
         }
@@ -22,10 +22,6 @@ struct ListeningView: View {
         switch listeningSession.state {
         case .idle:
             return "Ожидание..."
-        case .listening:
-            return "Слушаю..."
-        case .wakeWordDetected:
-            return "Нейрон!"
         case .recording:
             return "Запись..."
         case .processing:
@@ -36,12 +32,8 @@ struct ListeningView: View {
     }
 
     private var isAnimating: Bool {
-        switch listeningSession.state {
-        case .listening, .wakeWordDetected, .recording:
-            return true
-        default:
-            return false
-        }
+        if case .recording = listeningSession.state { return true }
+        return false
     }
 
     var body: some View {
@@ -63,7 +55,7 @@ struct ListeningView: View {
                     .fill(statusColor)
                     .frame(width: 48, height: 48)
 
-                Image(systemName: listeningSession.state == .recording ? "waveform" : "ear")
+                Image(systemName: isAnimating ? "waveform" : "mic")
                     .font(.title2)
                     .foregroundColor(.white)
             }

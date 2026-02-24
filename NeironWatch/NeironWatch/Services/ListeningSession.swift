@@ -6,8 +6,6 @@ import AVFoundation
 
 enum ListeningState: Equatable {
     case idle
-    case listening
-    case wakeWordDetected
     case recording
     case processing
     case error(String)
@@ -23,11 +21,9 @@ class ListeningSession: NSObject, ObservableObject, WKExtendedRuntimeSessionDele
 
     private var extendedSession: WKExtendedRuntimeSession?
     private let audioManager = AudioManager()
-    private let wakeWordDetector = WakeWordDetector()
     private let silenceDetector = SilenceDetector()
     private var remainingTimer: Timer?
     private var sessionStartDate: Date?
-    private let audioEngine = AVAudioEngine()
 
     // MARK: - Public API
 
@@ -43,8 +39,6 @@ class ListeningSession: NSObject, ObservableObject, WKExtendedRuntimeSessionDele
     func stopListening() {
         remainingTimer?.invalidate()
         remainingTimer = nil
-        wakeWordDetector.stopDetecting()
-        if audioEngine.isRunning { audioEngine.stop() }
         audioManager.stopRecording()
         extendedSession?.invalidate()
         extendedSession = nil
@@ -56,8 +50,7 @@ class ListeningSession: NSObject, ObservableObject, WKExtendedRuntimeSessionDele
     func extendedRuntimeSessionDidStart(_ extendedRuntimeSession: WKExtendedRuntimeSession) {
         sessionStartDate = Date()
         startRemainingTimer()
-        beginWakeWordListening()
-        setState(.listening)
+        startPromptRecording()
     }
 
     func extendedRuntimeSessionWillExpire(_ extendedRuntimeSession: WKExtendedRuntimeSession) {
@@ -76,36 +69,6 @@ class ListeningSession: NSObject, ObservableObject, WKExtendedRuntimeSessionDele
         } else {
             setState(.idle)
         }
-    }
-
-    // MARK: - Private — Wake word phase
-
-    private func beginWakeWordListening() {
-        do {
-            try audioManager.setupAudioSession()
-        } catch {
-            setState(.error(error.localizedDescription))
-            return
-        }
-
-        wakeWordDetector.onWakeWordDetected = { [weak self] in
-            self?.handleWakeWordDetected()
-        }
-        wakeWordDetector.startDetecting(audioEngine: audioEngine)
-
-        do {
-            audioEngine.prepare()
-            try audioEngine.start()
-        } catch {
-            setState(.error(error.localizedDescription))
-        }
-    }
-
-    private func handleWakeWordDetected() {
-        setState(.wakeWordDetected)
-        wakeWordDetector.stopDetecting()
-        if audioEngine.isRunning { audioEngine.stop() }
-        startPromptRecording()
     }
 
     // MARK: - Private — Recording phase

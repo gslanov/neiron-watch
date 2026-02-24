@@ -33,14 +33,9 @@ class AudioManager: NSObject, ObservableObject {
 
     func setupAudioSession() throws {
         let session = AVAudioSession.sharedInstance()
-        try session.setCategory(
-            .playAndRecord,
-            mode: .default,
-            options: [.duckOthers]
-        )
-        // setPreferredSampleRate unavailable on watchOS
+        try session.setCategory(.record, mode: .default)
         try session.setActive(true, options: .notifyOthersOnDeactivation)
-        logger.info("Audio session configured: sampleRate=\(AppConfig.audioSampleRate)")
+        logger.info("Audio session configured for recording")
     }
 
     // MARK: - Recording
