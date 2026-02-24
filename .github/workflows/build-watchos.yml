@@ -131,9 +131,9 @@ jobs:
               build_app(
                 project: "Neiron.xcodeproj",
                 scheme: "NeironWatch",
-                destination: "generic/platform=watchOS",
                 configuration: "Release",
                 export_method: "app-store",
+                sdk: "watchos",
                 export_options: {
                   signingStyle: "manual",
                   teamID: ENV["TEAM_ID"],
