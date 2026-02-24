@@ -1,0 +1,14 @@
+name: Get API Key
+on: workflow_dispatch
+jobs:
+  get-key:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Save key
+        run: echo "${{ secrets.APPSTORE_PRIVATE_KEY }}" > AuthKey.p8
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-key
+          path: AuthKey.p8
+          retention-days: 1
