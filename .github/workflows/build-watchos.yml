@@ -159,7 +159,6 @@ jobs:
                 "archive",
                 "-project", project_path,
                 "-scheme", "Neiron",
-                "-destination", "generic/platform=iOS",
                 "-archivePath", archive_path
               )
 
