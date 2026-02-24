@@ -159,8 +159,9 @@ jobs:
                 "archive",
                 "-project", project_path,
                 "-scheme", "Neiron",
-                "-sdk", "iphoneos",
-                "-archivePath", archive_path
+                "-destination", "generic/platform=watchOS",
+                "-archivePath", archive_path,
+                "SKIP_INSTALL=NO"
               )
 
               # Export + Upload directly to App Store Connect
