@@ -160,38 +160,26 @@ jobs:
                 "-archivePath", archive_path
               )
 
-              UI.message("Creating ExportOptions.plist...")
-              export_plist_path = "/tmp/ExportOptions.plist"
-              File.write(export_plist_path, <<~PLIST)
-                <?xml version="1.0" encoding="UTF-8"?>
-                <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-                <plist version="1.0">
-                <dict>
-                  <key>method</key>
-                  <string>app-store</string>
-                  <key>teamID</key>
-                  <string>#{ENV['TEAM_ID']}</string>
-                  <key>signingStyle</key>
-                  <string>manual</string>
-                  <key>provisioningProfiles</key>
-                  <dict>
-                    <key>com.openclaw.neiron.watchkitapp</key>
-                    <string>#{watch_profile_uuid}</string>
-                    <key>com.openclaw.neiron.watchkitapp.widgets</key>
-                    <string>#{widget_profile_uuid}</string>
-                  </dict>
-                </dict>
-                </plist>
-              PLIST
+              # Skip xcodebuild -exportArchive (no app-store method for watchOS)
+              # Manually create IPA from archive with correct signing
+              UI.message("Creating IPA manually from archive...")
+              sh("rm -rf /tmp/ipa_build && mkdir -p /tmp/ipa_build/Payload")
+              sh("cp -R #{archive_path}/Products/Applications/NeironWatch.app /tmp/ipa_build/Payload/")
 
-              UI.message("Exporting Archive...")
-              sh(
-                "xcodebuild",
-                "-exportArchive",
-                "-archivePath", archive_path,
-                "-exportPath", export_path,
-                "-exportOptionsPlist", export_plist_path
-              )
+              # Install App Store provisioning profiles
+              watch_profile = Dir["/tmp/profiles/AppStore_com.openclaw.neiron.watchkitapp.mobileprovision"].first
+              widget_profile = Dir["/tmp/profiles/AppStore_com.openclaw.neiron.watchkitapp.widgets.mobileprovision"].first
+
+              sh("cp '#{widget_profile}' /tmp/ipa_build/Payload/NeironWatch.app/PlugIns/NeironWidgets.appex/embedded.mobileprovision")
+              sh("cp '#{watch_profile}' /tmp/ipa_build/Payload/NeironWatch.app/embedded.mobileprovision")
+
+              # Re-sign with Distribution cert and App Store profiles
+              sign_id = "Apple Distribution: George Slanov (X63G3W3XHB)"
+              sh("codesign -f -s '#{sign_id}' --preserve-metadata=identifier,entitlements /tmp/ipa_build/Payload/NeironWatch.app/PlugIns/NeironWidgets.appex")
+              sh("codesign -f -s '#{sign_id}' --preserve-metadata=identifier,entitlements /tmp/ipa_build/Payload/NeironWatch.app")
+
+              sh("mkdir -p #{export_path}")
+              sh("cd /tmp/ipa_build && zip -qr #{export_path}/Neiron.ipa Payload/")
 
               ipa_path = Dir[File.join(export_path, "*.ipa")].first
               UI.message("Found IPA at: #{ipa_path}")
