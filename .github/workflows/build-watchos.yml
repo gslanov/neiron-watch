@@ -77,25 +77,45 @@ jobs:
                 key_filepath: ENV["API_KEY_PATH"]
               )
 
-              # Download and install provisioning profiles
-              watch_profile = get_provisioning_profile(
+              # Download and install provisioning profiles via sigh
+              watch_uuid = get_provisioning_profile(
                 api_key: api_key,
                 app_identifier: "com.openclaw.neiron.watchkitapp",
-                platform: "ios"
+                platform: "ios",
+                output_path: "/tmp/profiles"
               )
+              watch_profile_uuid = lane_context[SharedValues::SIGH_UDID]
+              watch_profile_name = lane_context[SharedValues::SIGH_NAME]
+              UI.message("Watch profile: #{watch_profile_name} (#{watch_profile_uuid})")
 
-              widget_profile = get_provisioning_profile(
+              widget_uuid = get_provisioning_profile(
                 api_key: api_key,
                 app_identifier: "com.openclaw.neiron.watchkitapp.widgets",
-                platform: "ios"
+                platform: "ios",
+                output_path: "/tmp/profiles"
               )
+              widget_profile_uuid = lane_context[SharedValues::SIGH_UDID]
+              widget_profile_name = lane_context[SharedValues::SIGH_NAME]
+              UI.message("Widget profile: #{widget_profile_name} (#{widget_profile_uuid})")
 
-              # Set manual signing for all targets
+              # Set manual signing per-target with profile UUIDs
               update_code_signing_settings(
                 path: "Neiron.xcodeproj",
+                targets: "NeironWatch",
                 use_automatic_signing: false,
                 team_id: ENV["TEAM_ID"],
-                code_sign_identity: "Apple Distribution"
+                code_sign_identity: "Apple Distribution",
+                profile_uuid: watch_profile_uuid,
+                profile_name: watch_profile_name
+              )
+              update_code_signing_settings(
+                path: "Neiron.xcodeproj",
+                targets: "NeironWidgets",
+                use_automatic_signing: false,
+                team_id: ENV["TEAM_ID"],
+                code_sign_identity: "Apple Distribution",
+                profile_uuid: widget_profile_uuid,
+                profile_name: widget_profile_name
               )
 
               build_app(
@@ -108,11 +128,10 @@ jobs:
                   signingStyle: "manual",
                   teamID: ENV["TEAM_ID"],
                   provisioningProfiles: {
-                    "com.openclaw.neiron.watchkitapp" => watch_profile["com.openclaw.neiron.watchkitapp"],
-                    "com.openclaw.neiron.watchkitapp.widgets" => widget_profile["com.openclaw.neiron.watchkitapp.widgets"]
+                    "com.openclaw.neiron.watchkitapp" => watch_profile_name,
+                    "com.openclaw.neiron.watchkitapp.widgets" => widget_profile_name
                   }
-                },
-                xcargs: "DEVELOPMENT_TEAM='#{ENV['TEAM_ID']}' PROVISIONING_PROFILE_SPECIFIER=''"
+                }
               )
 
               upload_to_testflight(
