@@ -17,8 +17,17 @@ jobs:
       - name: Select Xcode 16
         run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
 
-      - name: Install watchOS SDK
-        run: xcodebuild -downloadPlatform watchOS
+      - name: Install watchOS platform
+        run: |
+          # Check if watchOS SDK already present
+          xcodebuild -showsdks 2>&1 | grep -i watch && echo "watchOS SDK found" && exit 0
+          # Try downloading
+          echo "Downloading watchOS platform..."
+          xcodebuild -downloadPlatform watchOS 2>&1 || true
+          sudo xcodebuild -downloadPlatform watchOS 2>&1 || true
+          # Verify
+          xcodebuild -showsdks 2>&1 | grep -i watch || echo "WARNING: watchOS SDK not available"
+          xcodebuild -showsdks
 
       - name: Install XcodeGen
         run: brew install xcodegen
