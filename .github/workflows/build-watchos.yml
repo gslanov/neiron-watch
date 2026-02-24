@@ -132,7 +132,7 @@ jobs:
                 targets: ["NeironWatch"],
                 use_automatic_signing: false,
                 team_id: ENV["TEAM_ID"],
-                code_sign_identity: "Apple Distribution: George Slanov (X63G3W3XH8)",
+                code_sign_identity: "Apple Distribution: George Slanov (X63G3W3XHB)",
                 profile_uuid: watch_profile_uuid
               )
               update_code_signing_settings(
@@ -140,7 +140,7 @@ jobs:
                 targets: ["NeironWidgets"],
                 use_automatic_signing: false,
                 team_id: ENV["TEAM_ID"],
-                code_sign_identity: "Apple Distribution: George Slanov (X63G3W3XH8)",
+                code_sign_identity: "Apple Distribution: George Slanov (X63G3W3XHB)",
                 profile_uuid: widget_profile_uuid
               )
 
