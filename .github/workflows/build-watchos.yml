@@ -128,24 +128,61 @@ jobs:
                 profile_uuid: widget_profile_uuid
               )
 
-              build_app(
-                project: "Neiron.xcodeproj",
-                scheme: "NeironWatch",
-                configuration: "Release",
-                export_method: "app-store",
-                sdk: "watchos",
-                export_options: {
-                  signingStyle: "manual",
-                  teamID: ENV["TEAM_ID"],
-                  provisioningProfiles: {
-                    "com.openclaw.neiron.watchkitapp" => watch_profile_name,
-                    "com.openclaw.neiron.watchkitapp.widgets" => widget_profile_name
-                  }
-                }
+              archive_path = "/tmp/NeironWatch.xcarchive"
+              export_path = "/tmp/export"
+
+              UI.message("Archiving project...")
+              sh(
+                "xcodebuild",
+                "archive",
+                "-project", "Neiron.xcodeproj",
+                "-scheme", "NeironWatch",
+                "-sdk", "watchos",
+                "-archivePath", archive_path,
+                "CODE_SIGN_STYLE=Manual",
+                "DEVELOPMENT_TEAM=#{ENV['TEAM_ID']}",
+                "CODE_SIGN_IDENTITY=Apple Distribution"
               )
+
+              UI.message("Creating ExportOptions.plist...")
+              export_plist_path = "/tmp/ExportOptions.plist"
+              File.write(export_plist_path, <<~PLIST)
+                <?xml version="1.0" encoding="UTF-8"?>
+                <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+                <plist version="1.0">
+                <dict>
+                  <key>method</key>
+                  <string>app-store</string>
+                  <key>teamID</key>
+                  <string>#{ENV['TEAM_ID']}</string>
+                  <key>signingStyle</key>
+                  <string>manual</string>
+                  <key>provisioningProfiles</key>
+                  <dict>
+                    <key>com.openclaw.neiron.watchkitapp</key>
+                    <string>#{watch_profile_uuid}</string>
+                    <key>com.openclaw.neiron.watchkitapp.widgets</key>
+                    <string>#{widget_profile_uuid}</string>
+                  </dict>
+                </dict>
+                </plist>
+              PLIST
+
+              UI.message("Exporting Archive...")
+              sh(
+                "xcodebuild",
+                "-exportArchive",
+                "-archivePath", archive_path,
+                "-exportPath", export_path,
+                "-exportOptionsPlist", export_plist_path
+              )
+
+              ipa_path = Dir[File.join(export_path, "*.ipa")].first
+              UI.message("Found IPA at: #{ipa_path}")
 
               upload_to_testflight(
                 api_key: api_key,
+                ipa: ipa_path,
                 skip_waiting_for_build_processing: true
               )
             end
