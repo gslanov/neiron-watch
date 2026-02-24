@@ -77,33 +77,25 @@ jobs:
                 key_filepath: ENV["API_KEY_PATH"]
               )
 
-              # Get provisioning profiles
-              profiles = {}
-              ["com.openclaw.neiron.watchkitapp", "com.openclaw.neiron.watchkitapp.widgets"].each do |app_id|
-                prof = get_provisioning_profile(
-                  api_key: api_key,
-                  app_identifier: app_id,
-                  platform: "ios"
-                )
-                profiles[app_id] = prof[app_id]
-              end
-
-              # Update signing to manual with profiles
-              update_code_signing_settings(
-                path: "Neiron.xcodeproj",
-                use_automatic_signing: false,
-                team_id: ENV["TEAM_ID"],
-                code_sign_identity: "Apple Distribution",
-                targets: ["NeironWatch"],
-                profile_name: profiles["com.openclaw.neiron.watchkitapp"]
+              # Download and install provisioning profiles
+              watch_profile = get_provisioning_profile(
+                api_key: api_key,
+                app_identifier: "com.openclaw.neiron.watchkitapp",
+                platform: "ios"
               )
+
+              widget_profile = get_provisioning_profile(
+                api_key: api_key,
+                app_identifier: "com.openclaw.neiron.watchkitapp.widgets",
+                platform: "ios"
+              )
+
+              # Set manual signing for all targets
               update_code_signing_settings(
                 path: "Neiron.xcodeproj",
                 use_automatic_signing: false,
                 team_id: ENV["TEAM_ID"],
-                code_sign_identity: "Apple Distribution",
-                targets: ["NeironWidgets"],
-                profile_name: profiles["com.openclaw.neiron.watchkitapp.widgets"]
+                code_sign_identity: "Apple Distribution"
               )
 
               build_app(
@@ -113,9 +105,14 @@ jobs:
                 configuration: "Release",
                 export_method: "app-store",
                 export_options: {
-                  provisioningProfiles: profiles
+                  signingStyle: "manual",
+                  teamID: ENV["TEAM_ID"],
+                  provisioningProfiles: {
+                    "com.openclaw.neiron.watchkitapp" => watch_profile["com.openclaw.neiron.watchkitapp"],
+                    "com.openclaw.neiron.watchkitapp.widgets" => widget_profile["com.openclaw.neiron.watchkitapp.widgets"]
+                  }
                 },
-                xcargs: "DEVELOPMENT_TEAM=#{ENV['TEAM_ID']}"
+                xcargs: "DEVELOPMENT_TEAM='#{ENV['TEAM_ID']}' PROVISIONING_PROFILE_SPECIFIER=''"
               )
 
               upload_to_testflight(
