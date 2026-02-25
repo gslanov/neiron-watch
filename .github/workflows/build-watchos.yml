@@ -79,7 +79,6 @@ jobs:
             -scheme NeironWatch \
             -archivePath /tmp/Neiron.xcarchive \
             -allowProvisioningUpdates \
-            CODE_SIGN_IDENTITY="Apple Distribution: George Slanov (X63G3W3XH8)" \
             DEVELOPMENT_TEAM="${{ secrets.APPLE_TEAM_ID }}"
 
       - name: Create ExportOptions.plist
